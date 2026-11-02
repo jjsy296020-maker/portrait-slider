@@ -24,6 +24,26 @@
   .arrow svg { width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   #prev { left: 4px; } #next { right: 4px; }
   @media (max-width: 600px) { .arrow { width: 44px; height: 44px; } .arrow svg { width: 24px; height: 24px; } }
+
+  /* 하단 점 표시 */
+  #dots {
+    position: absolute; left: 0; right: 0; bottom: 6px;
+    display: flex; justify-content: center; flex-wrap: wrap;
+    pointer-events: none;
+  }
+  #dots button {
+    pointer-events: auto; width: 22px; height: 22px; padding: 0; border: 0; background: none;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #dots button::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: #fff; opacity: .45; transition: opacity .2s, transform .2s;
+    filter: drop-shadow(0 0 3px rgba(0,0,0,.6));
+  }
+  #dots button.on::before { opacity: 1; transform: scale(1.25); }
+  #dots button:focus-visible { outline: none; }
+
   .hide { display: none; }
 </style>
 </head>
@@ -31,6 +51,7 @@
 <div id="stage">
   <button id="prev" class="arrow" aria-label="이전"><svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8"/></svg></button>
   <button id="next" class="arrow" aria-label="다음"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8"/></svg></button>
+  <div id="dots"></div>
 </div>
 
 <script>
@@ -38,7 +59,9 @@
   const q = new URLSearchParams(location.search);
   const set = q.get('set');
   const auto = q.has('auto') ? parseFloat(q.get('auto')) : 4;
+  const showDots = q.get('dots') !== '0';   // 점 끄기: &dots=0
   const stage = document.getElementById('stage');
+  const dotsBox = document.getElementById('dots');
 
   let list = [];
   try {
@@ -58,20 +81,37 @@
     return im;
   });
 
+  // 점 만들기
+  const dots = imgs.map((_, i) => {
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', (i + 1) + '번째 사진');
+    b.onclick = () => go(i);
+    dotsBox.appendChild(b);
+    return b;
+  });
+
   let cur = 0, timer;
   function show(n) {
     imgs[cur].classList.remove('on');
+    dots[cur].classList.remove('on');
     cur = (n + imgs.length) % imgs.length;
     imgs[cur].classList.add('on');
+    dots[cur].classList.add('on');
     const nx = imgs[(cur + 1) % imgs.length]; nx.loading = 'eager';
   }
+  function stop() { clearInterval(timer); }
   function restart() {
-    clearInterval(timer);
+    stop();
     if (auto > 0 && imgs.length > 1) timer = setInterval(() => show(cur + 1), auto * 1000);
   }
   function go(n) { show(n); restart(); }
 
-  if (imgs.length < 2) document.querySelectorAll('.arrow').forEach(a => a.classList.add('hide'));
+  if (imgs.length < 2) {
+    document.querySelectorAll('.arrow').forEach(a => a.classList.add('hide'));
+    dotsBox.classList.add('hide');
+  }
+  if (!showDots) dotsBox.classList.add('hide');
+
   document.getElementById('prev').onclick = () => go(cur - 1);
   document.getElementById('next').onclick = () => go(cur + 1);
   addEventListener('keydown', e => {
@@ -79,6 +119,13 @@
     if (e.key === 'ArrowRight') go(cur + 1);
   });
 
+  // 마우스를 올리면 잠시 멈춤 (마우스가 있는 기기에서만)
+  if (window.matchMedia('(hover: hover)').matches) {
+    stage.addEventListener('mouseenter', stop);
+    stage.addEventListener('mouseleave', restart);
+  }
+
+  // 스와이프
   let x0 = null;
   stage.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
   stage.addEventListener('touchend', e => {
