@@ -23,5 +23,12 @@
   "Profile/minkyung/4.JPG",
   "Profile/minkyung/5.JPG",
   "Profile/minkyung/6.JPG"
-]
+ ],
+  "actor": [
+    "actor/1.jpg",
+    "actor/2.jpg",
+    "actor/3.jpg",
+    "actor/4.jpg",
+    "actor/5.jpg"
+  ]
 }
