@@ -45,5 +45,12 @@
     "my-shoes/my-shoes/11.jpg",
     "my-shoes/my-shoes/12.jpg",
     "my-shoes/my-shoes/13.jpg"
+   ],
+  "theme-profiles": [
+    "theme-profiles/theme-profiles/1.jpg",
+    "theme-profiles/theme-profiles/2.jpg",
+    "theme-profiles/theme-profiles/3.jpg",
+    "theme-profiles/theme-profiles/4.jpg",
+    "theme-profiles/theme-profiles/5.jpg"
   ]
 }
