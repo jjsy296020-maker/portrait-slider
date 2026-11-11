@@ -52,5 +52,12 @@
     "theme-profiles/theme-profiles/3.jpg",
     "theme-profiles/theme-profiles/4.jpg",
     "theme-profiles/theme-profiles/5.jpg"
+  ],
+  "theme-profiles": [
+    "N/N/1.jpg",
+    "N/N/2.jpg",
+    "N/N/3.jpg",
+    "N/N/4.jpg",
+    "N/N/5.jpg"
   ]
 }
